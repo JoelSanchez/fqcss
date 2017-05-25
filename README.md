@@ -18,58 +18,37 @@ Pull requests welcome. This library is currently in alpha state. Expect breaking
 
 (defn something []
   (wrap-reagent
-      [:div.ventas {:class "example" :fqcss [::preheader :app.some.other.namespace/something]}
+      [:div {:class "example" :fqcss [::preheader :app.some.other.namespace/something]}
         [:div.ui.container
-          [:div.ventas {:fqcss [::preheader-item]}
-            [:strong "Att. cliente y pedidos: "]
-            [:a "666 555 444"]
-            [:div.ventas {:fqcss [::preheader-separator]} "|"]
-            [:a "666 555 444"]
-            [:div.ventas {:fqcss [::preheader-separator]} "|"]
-            [:a "444 333 222"]]
-          [:div.ventas {:fqcss [::preheader-separator]} "-"]
-          [:div.ventas {:fqcss [::preheader-item]}
-            [:strong "Horario:"]
-            [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]]))
+          [:div {:fqcss [::preheader-item]}
+            [:div {:fqcss [::preheader-separator]} "|"]]
+          [:div {:fqcss [::preheader-separator]} "-"]
+          [:div {:fqcss [::preheader-item]}
+            [:strong "Lorem ipsum"]]]]))
 
 
 ;; This results in:
 
 (defn something []
   (wrap-reagent
-      [:div.ventas {:class "example preheader--PG__1 something--PG__2"}
+      [:div {:class "example preheader--PG__1 something--PG__2"}
         [:div.ui.container
-          [:div.ventas {:fqcss [::preheader-item]}
-            [:strong "Att. cliente y pedidos: "]
-            [:a "666 555 444"]
-            [:div.ventas {:fqcss [::preheader-separator]} "|"]
-            [:a "666 555 444"]
-            [:div.ventas {:fqcss [::preheader-separator]} "|"]
-            [:a "444 333 222"]]
-          [:div.ventas {:fqcss [::preheader-separator]} "-"]
-          [:div.ventas {:fqcss [::preheader-item]}
-            [:strong "Horario:"]
-            [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]]))
-
+          [:div {:class "preheader-item--PG__1"}
+            [:div {:class "preheader-separator--PG__1"} "|"]]
+          [:div {:class "preheader-separator--PG__1"} "-"]
+          [:div {:class "preheader-item--PG__1"}
+            [:strong "Lorem ipsum"]]]]))
 
 ;; The same can be achieved without wrap-reagent:
 
 (defn something []
-  [:div.ventas {:class (clojure.string/join " " (concat ["example"] (map resolve-kw [::preheader :app.some.other.namespace/something])))}
+  [:div {:class (clojure.string/join " " (concat ["example"] (map resolve-kw [::preheader :app.some.other.namespace/something])))}
     [:div.ui.container
-      [:div.ventas {:class (resolve-kw ::preheader-item)}
-        [:strong "Att. cliente y pedidos: "]
-        [:a "666 555 444"]
-        [:div.ventas {:class (resolve-kw ::preheader-separator)} "|"]
-        [:a "666 555 444"]
-        [:div.ventas {:class (resolve-kw ::preheader-separator)} "|"]
-        [:a "444 333 222"]]
-      [:div.ventas {:class (resolve-kw ::preheader-separator)} "-"]
-      [:div.ventas {:class (resolve-kw ::preheader-item)}
-        [:strong "Horario:"]
-        [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]])
-
-
+      [:div {:class (resolve-kw ::preheader-item)}
+        [:div {:class (resolve-kw ::preheader-separator)} "|"]]
+      [:div {:class (resolve-kw ::preheader-separator)} "-"]
+      [:div {:class (resolve-kw ::preheader-item)}
+        [:strong "Lorem ipsum"]]]])
 ```
 
 FQCSS works by processing your stylesheet, replacing its special syntax (the keyword surrounded by curly braces):
@@ -101,10 +80,6 @@ You could set up a watcher for the output of your favorite CSS preprocessor (SAS
 ```
 sass-input.scss -> sass-output.css -> fqcss-output.css
 ```
-
-
-```
-
 
 
 ## License
