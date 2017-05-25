@@ -2,50 +2,23 @@
 
 [![Clojars Project](https://img.shields.io/clojars/v/fqcss.svg)](https://clojars.org/fqcss)
 
-*Quick example*:
+*Abstract:*
+
+I developed this because I wanted a simple alternative to other popular CSS modules solutions for CLJ/CLJS (found them too limited or too awkward). fqcss works by replacing namespaced keywords in CSS files with generated CSS classes.
+
+Pull requests welcome. This library is currently in alpha state. Expect breaking changes.
+
+*Quick example with Reagent*:
 
 ```Clojure
 (ns app.some.namespace
   (:require [fqcss :refer [wrap-reagent defclasses resolve-kw]))
 
-;; defclasses registers classes for this namespace
-
-(defclasses
-  [:something
-   :something-item
-   :other-thing])
-
-;; At this point fqcss has an internal map which looks like this:
-
-{:app.some.namespace/something ".something--PG__1"}
-{:app.some.namespace/something-item ".something-item--PG__1"}
-{:app.some.namespace/other-thing ".other-thing--PG__1"}
-
-;; At the left side, a fully qualified keyword, which you'll use to refer to the unique class at the right.
-;; "PG__1" is the generated identifier for this namespace.
-
-;; Now we can use those classes (note the use of the class "something" from the namespace "app.some.other.namespace"):
-
-(defn something []
-  [:div.ventas {:class (clojure.string/join " " (map resolve-kw [::preheader :app.some.other.namespace/something])}
-    [:div.ui.container
-      [:div.ventas {:class (resolve-kw ::preheader-item)}
-        [:strong "Att. cliente y pedidos: "]
-        [:a "666 555 444"]
-        [:div.ventas {:class (resolve-kw ::preheader-separator)} "|"]
-        [:a "666 555 444"]
-        [:div.ventas {:class (resolve-kw ::preheader-separator)} "|"]
-        [:a "444 333 222"]]
-      [:div.ventas {:class (resolve-kw ::preheader-separator)} "-"]
-      [:div.ventas {:class (resolve-kw ::preheader-item)}
-        [:strong "Horario:"]
-        [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]])
-
-;; wrap-reagent provides a little syntax sugar:
+;; Define the namespaced classes as a vector in the :fqcss property:
 
 (defn something []
   (wrap-reagent
-      [:div.ventas {:fqcss [::preheader :app.some.other.namespace/something]}
+      [:div.ventas {:class "example" :fqcss [::preheader :app.some.other.namespace/something]}
         [:div.ui.container
           [:div.ventas {:fqcss [::preheader-item]}
             [:strong "Att. cliente y pedidos: "]
@@ -60,9 +33,46 @@
             [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]]))
 
 
+;; This results in:
+
+(defn something []
+  (wrap-reagent
+      [:div.ventas {:class "example preheader--PG__1 something--PG__2"}
+        [:div.ui.container
+          [:div.ventas {:fqcss [::preheader-item]}
+            [:strong "Att. cliente y pedidos: "]
+            [:a "666 555 444"]
+            [:div.ventas {:fqcss [::preheader-separator]} "|"]
+            [:a "666 555 444"]
+            [:div.ventas {:fqcss [::preheader-separator]} "|"]
+            [:a "444 333 222"]]
+          [:div.ventas {:fqcss [::preheader-separator]} "-"]
+          [:div.ventas {:fqcss [::preheader-item]}
+            [:strong "Horario:"]
+            [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]]))
+
+
+;; The same can be achieved without wrap-reagent:
+
+(defn something []
+  [:div.ventas {:class (clojure.string/join " " (concat ["example"] (map resolve-kw [::preheader :app.some.other.namespace/something])))}
+    [:div.ui.container
+      [:div.ventas {:class (resolve-kw ::preheader-item)}
+        [:strong "Att. cliente y pedidos: "]
+        [:a "666 555 444"]
+        [:div.ventas {:class (resolve-kw ::preheader-separator)} "|"]
+        [:a "666 555 444"]
+        [:div.ventas {:class (resolve-kw ::preheader-separator)} "|"]
+        [:a "444 333 222"]]
+      [:div.ventas {:class (resolve-kw ::preheader-separator)} "-"]
+      [:div.ventas {:class (resolve-kw ::preheader-item)}
+        [:strong "Horario:"]
+        [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]])
+
+
 ```
 
-FQCSS works by modifying your stylesheet, replacing its special syntax (the keyword surrounded by curly braces):
+FQCSS works by processing your stylesheet, replacing its special syntax (the keyword surrounded by curly braces):
 
 ```CSS
 .{app.some.namespace/preheader} {
@@ -71,7 +81,10 @@ FQCSS works by modifying your stylesheet, replacing its special syntax (the keyw
 }
 ```
 
+To process a CSS file:
+
 ```Clojure
+(replace-css (slurp "stylesheet.css")
 
 ```
 
@@ -82,12 +95,17 @@ The generated CSS is:
   padding: 8px 0px;
   background-color: #ecf0f1;
 }
+
+You could set up a watcher for the output of your favorite CSS preprocessor (SASS in my case) and call fqcss to postprocess that CSS file:
+
+```
+sass-input.scss -> sass-output.css -> fqcss-output.css
 ```
 
 
-This library is only concerned with the generation and substitution of namespaced CSS classes. How you write your CSS is out of scope by design.
+```
 
-I'm using this as a replacement for CSS Modules.
+
 
 ## License
 

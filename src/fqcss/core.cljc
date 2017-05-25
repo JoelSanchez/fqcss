@@ -1,5 +1,6 @@
 (ns fqcss.core
-  (:require [clojure.tools.trace :refer [trace]]))
+  (:require [clojure.tools.trace :refer [trace]]
+            [clojure.string :as string]))
 
 (def ^:private pseudo-gensym-id
   "The pseudo-gensym atom"
@@ -33,31 +34,14 @@
       (swap! gensym-map assoc ns-symbol new-gs)
       new-gs)))
 
-(def ^:private class-map
-  "A map associating namespaced keywords to generated CSS classes"
-  (atom {}))
-
 (defn reset
-  "Resets the gensym map, the class map, and the pseudo-gensym ID. Useful for testing.
-   This will undo any calls to defclass / defclasses already made."
+  "Resets the gensym map, the class map, and the pseudo-gensym ID."
   []
   (reset! gensym-map {})
-  (reset! pseudo-gensym-id 0)
-  (reset! class-map {}))
-
-(defn defclass
-  "Generates given CSS class"
-  [kw]
-  (swap! class-map assoc (keyword (str (.getName *ns*)) (name kw))
-                         (str (name kw) "--" (pseudo-gensym-for-ns (.getName *ns*)))))
+  (reset! pseudo-gensym-id 0))
 
 (defn resolve-kw [kw]
-  (get @class-map kw))
-
-(defn defclasses
-  "Generates given CSS classes"
-  [classes]
-  (last (doall (map defclass classes))))
+  (str (name kw) "--" (pseudo-gensym-for-ns (.getName *ns*))))
 
 (defn- process-property [[kw value]]
   (if (= kw :fqcss)
@@ -96,12 +80,22 @@
     (into [] (remove nil-or-empty (concat [element (process-properties properties)]
                                           (into [] (map wrap-reagent children)))))))
 
-(defn- replace-css*
-  "replace-css helper. Replaces one fqcss keyword in the CSS string"
-  [css [kw cls]]
-  (clojure.string/replace css (str "{" (namespace kw) "/" (name kw) "}") cls))
+(defn- placeholder->kw
+  "replace-css helper. Transforms something like {fqcss.core/something}
+   to :fqcss.core/something"
+  [placeholder]
+  (-> placeholder
+      (string/replace "{" "")
+      (string/replace "}" "")
+      (keyword)))
 
 (defn replace-css
   "Replaces the fqcss keywords in a CSS string"
   [css]
-  (reduce replace-css* css @class-map))
+  (let [matcher (re-matcher #"\{[a-zA-Z0-9\-\.\/]*?\}" css)]
+    (loop [css css]
+      (if-let [match (re-find matcher)]
+        (recur (string/replace css
+                               match
+                               (resolve-kw (placeholder->kw match))))
+        css))))

@@ -9,14 +9,6 @@
     (is (= 'PG__1 (@#'fqcss.core/pseudo-gensym-for-ns (.getName *ns*))))
     (is (= 'PG__2 (@#'fqcss.core/pseudo-gensym-for-ns 'example-ns)))))
 
-(deftest test-defclass
-  (testing "It should register classes"
-    (fqcss.core/reset)
-    (binding [*ns* (the-ns 'fqcss.core-test)]
-      (fqcss.core/defclasses [:something :something-else])
-      (is (= @@#'fqcss.core/class-map {:fqcss.core-test/something "something--PG__1"
-                                      :fqcss.core-test/something-else "something-else--PG__1"})))))
-
 (deftest test-resolve-kw
   (testing "It should resolve a keyword representing a class"
     (is (= "something--PG__1" (fqcss.core/resolve-kw ::something)))))
@@ -47,12 +39,3 @@
              .something--PG__1 { text-align: center; font-size: 14px; }
              .something--PG__1 &.something-else--PG__1 { font-size: 15px; }"]
       (is (= (fqcss.core/replace-css css) replaced-css)))))
-
-
-(defn test-ns-hook
-  []
-  (test-pseudo-gensym-for-ns)
-  (test-defclass)
-  (test-resolve-kw)
-  (test-wrap-reagent)
-  (test-replace-css))
