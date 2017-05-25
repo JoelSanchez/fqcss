@@ -8,7 +8,8 @@
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.542"]
-                 [garden "1.3.2"]]
+                 [garden "1.3.2"]
+                 [org.clojure/tools.trace "0.7.9"]]
 
   :test-paths ["test/clj"]
   :source-paths ["src"]

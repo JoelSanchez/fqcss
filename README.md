@@ -6,7 +6,7 @@
 
 ```Clojure
 (ns app.some.namespace
-  (:require [fqcss :refer [wrap-component defclasses resolve-kw]))
+  (:require [fqcss :refer [wrap-reagent defclasses resolve-kw]))
 
 ;; defclasses registers classes for this namespace
 
@@ -41,10 +41,10 @@
         [:strong "Horario:"]
         [:span "De Lunes a Viernes 09:00 - 13:30 / 16:00 - 19:30"]]]])
 
-;; wrap-component provides a little syntax sugar:
+;; wrap-reagent provides a little syntax sugar:
 
 (defn something []
-  (wrap-component
+  (wrap-reagent
       [:div.ventas {:fqcss [::preheader :app.some.other.namespace/something]}
         [:div.ui.container
           [:div.ventas {:fqcss [::preheader-item]}
@@ -62,13 +62,17 @@
 
 ```
 
-FQCSS works by modifying your stylesheet, replacing its special syntax ("clj" followed by the keyword):
+FQCSS works by modifying your stylesheet, replacing its special syntax (the keyword surrounded by curly braces):
 
 ```CSS
-.clj:app.some.namespace/preheader {
+.{app.some.namespace/preheader} {
   padding: 8px 0px;
   background-color: #ecf0f1;
 }
+```
+
+```Clojure
+
 ```
 
 The generated CSS is:
