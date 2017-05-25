@@ -1,6 +1,5 @@
 (ns fqcss.core
-  (:require [clojure.tools.trace :refer [trace]]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 (def ^:private pseudo-gensym-id
   "The pseudo-gensym atom"

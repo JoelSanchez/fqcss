@@ -7,9 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.542"]
-                 [garden "1.3.2"]
-                 [org.clojure/tools.trace "0.7.9"]]
+                 [org.clojure/clojurescript "1.9.542"]]
 
   :test-paths ["test/clj"]
   :source-paths ["src"]
@@ -29,7 +27,8 @@
                     :main          'fqcss.runner
                     :optimizations :none}}]}
 
-  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]]
+  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]
+                                  [org.clojure/tools.trace "0.7.9"]]
                    :source-paths ["dev"]}}
 
   :auto {:default {:file-pattern #"\.(clj|cljs|cljc|edn)$"}})
