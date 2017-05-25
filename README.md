@@ -74,6 +74,7 @@ The generated CSS is:
   padding: 8px 0px;
   background-color: #ecf0f1;
 }
+```
 
 You could set up a watcher for the output of your favorite CSS preprocessor (SASS in my case) and call fqcss to postprocess that CSS file:
 
