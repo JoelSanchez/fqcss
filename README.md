@@ -12,7 +12,7 @@ Pull requests welcome. This library is currently in alpha state. Expect breaking
 
 ```Clojure
 (ns app.some.namespace
-  (:require [fqcss :refer [wrap-reagent defclasses resolve-kw]))
+  (:require [fqcss :refer [wrap-reagent replace-css resolve-kw]))
 
 ;; Define the namespaced classes as a vector in the :fqcss property:
 
