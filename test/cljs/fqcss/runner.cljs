@@ -1,6 +1,6 @@
 (ns fqcss.runner
     (:require [doo.runner :refer-macros [doo-tests]]
-              [fqcss.macro-test]))
+              [fqcss.core-test]))
 
 (doo-tests
-  'fqcss.macro-test)
+ 'fqcss.core-test)

@@ -1,6 +1,8 @@
 (ns fqcss.core
   (:require [clojure.string :as string]))
 
+#?(:cljs (enable-console-print!))
+
 (def ^:private pseudo-gensym-id
   "The pseudo-gensym atom"
   (atom 0))
@@ -40,7 +42,7 @@
   (reset! pseudo-gensym-id 0))
 
 (defn resolve-kw [kw]
-  (str (name kw) "--" (pseudo-gensym-for-ns (.getName *ns*))))
+  (str (name kw) "--" (pseudo-gensym-for-ns (namespace kw))))
 
 (defn- process-property [[kw value]]
   (if (= kw :fqcss)
@@ -91,10 +93,7 @@
 (defn replace-css
   "Replaces the fqcss keywords in a CSS string"
   [css]
-  (let [matcher (re-matcher #"\{[a-zA-Z0-9\-\.\/]*?\}" css)]
-    (loop [css css]
-      (if-let [match (re-find matcher)]
-        (recur (string/replace css
-                               match
-                               (resolve-kw (placeholder->kw match))))
-        css))))
+  (let [matches (re-seq #"\{[a-zA-Z0-9\-\.\/]*?\}" css)]
+    (reduce (fn [acc item] (string/replace acc item (resolve-kw (placeholder->kw item))))
+            css
+            matches)))
