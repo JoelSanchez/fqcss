@@ -1,6 +1,7 @@
 (ns user
   (:require [clojure.tools.namespace.repl :as tn]
-            [clojure.repl :refer :all]))
+            [clojure.repl :refer :all]
+            [figwheel-sidecar.repl-api :as f]))
 
 (set! *warn-on-reflection* true)
 
@@ -22,6 +23,23 @@
                        {"clojars" "http://clojars.org/repo"}))))
 
 (clojure.tools.namespace.repl/set-refresh-dirs "src" "dev")
+
+(def figwheel-system (atom nil))
+
+(defn start
+  "This starts the figwheel server and watch based auto-compiler."
+  []
+  (reset! figwheel-system (f/start-figwheel!)))
+
+(defn stop
+  "Stop the figwheel server and watch based auto-compiler."
+  []
+  (@figwheel-system))
+
+(defn cljs-repl
+  "Launch a ClojureScript REPL that is connected to your build and host environment."
+  []
+  (f/cljs-repl))
 
 (defn r
   "Refreshes the changed namespaces"
