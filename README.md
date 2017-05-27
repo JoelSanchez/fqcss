@@ -2,8 +2,6 @@
 
 [![Clojars Project](https://img.shields.io/clojars/v/fqcss.svg)](https://clojars.org/fqcss)
 
-### Warning: at this time, this library is in development. Refrain from using it.
-
 *Abstract:*
 
 I developed this because I wanted a simple alternative to other popular CSS modules solutions for CLJ/CLJS (found them too limited or too awkward). fqcss works by replacing namespaced keywords in CSS files with generated CSS classes.
