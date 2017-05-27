@@ -20,7 +20,8 @@
 (defn- pseudo-gensym
   "Independent version of gensym. This allows generating the same classes in both client and server"
   ([] (pseudo-gensym "PG__"))
-  ([prefix-string] (. clojure.lang.Symbol (intern (str prefix-string (str (pseudo-gensym-nextid)))))))
+  ([prefix-string]
+     (symbol (str prefix-string (pseudo-gensym-nextid)))))
 
 (def ^:private gensym-map
   (atom {}))
@@ -29,10 +30,10 @@
   "Returns the pseudo-gensym associated with the given namespace.
    Creates and associates one if none exists"
   [ns-symbol]
-  (if-let [gs (get @gensym-map ns-symbol)]
+  (if-let [gs (get @gensym-map (keyword ns-symbol))]
     gs
     (let [new-gs (pseudo-gensym)]
-      (swap! gensym-map assoc ns-symbol new-gs)
+      (swap! gensym-map assoc (keyword ns-symbol) new-gs)
       new-gs)))
 
 (defn reset
