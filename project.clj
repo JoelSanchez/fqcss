@@ -1,4 +1,4 @@
-(defproject fqcss "0.0.5"
+(defproject fqcss "0.0.6"
   :description "FQCSS: namespaced CSS classes"
 
   :url "https://github.com/JoelSanchez/fqcss"
