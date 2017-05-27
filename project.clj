@@ -18,7 +18,7 @@
   :test-paths ["test/cljc"]
   :source-paths ["src"]
   :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
-  :repl-options {:init-ns user}
+  :repl-options {:init-ns user :port 4002}
 
   :cljsbuild {:test-commands {"test" ["lein" "doo" "chrome" "test" "once"]}
               :builds
