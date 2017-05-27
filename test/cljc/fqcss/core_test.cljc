@@ -6,8 +6,8 @@
 (deftest test-pseudo-gensym-for-ns
   (testing "It should generate a gensym for every namespace"
     (fqcss/reset)
-    (is (= 'PG__1 (@#'fqcss.core/pseudo-gensym-for-ns (.getName *ns*))))
-    (is (= 'PG__1 (@#'fqcss.core/pseudo-gensym-for-ns (.getName *ns*))))
+    (is (= 'PG__1 (@#'fqcss.core/pseudo-gensym-for-ns 'fqcss.core-test)))
+    (is (= 'PG__1 (@#'fqcss.core/pseudo-gensym-for-ns 'fqcss.core-test)))
     (is (= 'PG__2 (@#'fqcss.core/pseudo-gensym-for-ns 'example-ns)))))
 
 (deftest test-resolve-kw
