@@ -25,6 +25,17 @@
            [:div.other.thing {:other-property "value" :class "existing-class something--PG__1"}]
            [:div.yet.another.thing {:example "stuff"}]]
           ]
+      (is (= (fqcss/wrap-reagent component) resolved-component)))
+
+    (let [component
+          [:div.something.example {:property "value" :fqcss [::something ::something-else]}
+           [:div.other.thing {:other-property "value" :class "existing-class" :fqcss [::something]}]
+           [:div.yet.another.thing "Stuff"]]
+          resolved-component
+          [:div.something.example {:property "value" :class "something--PG__1 something-else--PG__1"}
+           [:div.other.thing {:other-property "value" :class "existing-class something--PG__1"}]
+           [:div.yet.another.thing "Stuff"]]
+          ]
       (is (= (fqcss/wrap-reagent component) resolved-component)))))
 
 (deftest test-replace-css

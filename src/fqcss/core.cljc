@@ -75,12 +75,19 @@
   "True if nil or empty coll"
   (or (nil? thing) (and (coll? thing) (empty? thing))))
 
+(declare wrap-reagent)
+
+(defn- maybe-wrap-reagent [child]
+  (if (vector? child)
+    (wrap-reagent child)
+    child))
+
 (defn wrap-reagent
   "Wraps a reagent component, adding the :fqcss property."
   [component]
   (let [{:keys [element properties children]} (reagent-component->map component)]
     (into [] (remove nil-or-empty (concat [element (process-properties properties)]
-                                          (into [] (map wrap-reagent children)))))))
+                                          (into [] (map maybe-wrap-reagent children)))))))
 
 (defn- placeholder->kw
   "replace-css helper. Transforms something like {fqcss.core/something}
