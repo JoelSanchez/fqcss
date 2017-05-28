@@ -76,10 +76,36 @@ The generated CSS is:
 }
 ```
 
-You could set up a watcher for the output of your favorite CSS preprocessor (SASS in my case) and call fqcss to postprocess that CSS file:
+This is how I integrate fqcss with sass in my projects: I watch changes in the "src/fqcss" directory, output the result from fqcss to the same relative paths in "src/scss", and then the SCSS watcher (lein-sassc) processes those files and turns them into a file in "resources/public/css/style.css". Here's the fqcss watcher:
 
-```
-sass-input.scss -> sass-output.css -> fqcss-output.css
+```Clojure
+(ns user
+  (:require [mount.core :as mount :refer [defstate]]
+            [async-watch.core :as watch]
+            [clojure.core.async :refer [>! <! go close!]]
+            [fqcss.core :as fqcss]))
+
+(defn fqcss-start []
+  (println "Starting fqcss")
+  (let [changes (watch/changes-in "src/fqcss")]
+    (go (while true
+      (let [[op filename] (<! changes)]
+        (when (and (clojure.string/ends-with? filename ".scss") (or (= (name op) "modify")
+                                                                    (= (name op) "create")))
+          (println "Processing fqcss (" (name op) ")")
+          (let [new-path (clojure.string/replace filename "fqcss" "scss")]
+            (println "\tSpitting to: " new-path)
+            (spit new-path (fqcss/replace-css (slurp filename))))))))))
+
+(defn fqcss-stop []
+  (println "Stopping fqcss")
+  (watch/cancel-changes))
+
+(defstate fqcss
+  :start
+    (fqcss-start)
+  :stop
+    (fqcss-stop))
 ```
 
 
