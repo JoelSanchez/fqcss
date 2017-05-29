@@ -1,4 +1,4 @@
-(defproject fqcss "0.0.6"
+(defproject fqcss "0.0.7"
   :description "FQCSS: namespaced CSS classes"
 
   :url "https://github.com/JoelSanchez/fqcss"
@@ -7,8 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.542"]
-                 [lein-doo "0.1.7"]]
+                 [org.clojure/clojurescript "1.9.542"]]
 
   :plugins [[lein-auto "0.1.2"]
             [lein-doo "0.1.6"]
@@ -69,7 +68,8 @@
                                   [org.clojure/tools.trace "0.7.9"]
                                   [binaryage/devtools "0.9.2"]
                                   [figwheel-sidecar "0.5.10"]
-                                  [com.cemerick/piggieback "0.2.1"]]
+                                  [com.cemerick/piggieback "0.2.1"]
+                                  [lein-doo "0.1.7"]]
                    :source-paths ["dev"]
                    :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :clean-targets ^{:protect false} ["resources/public/js/compiled"

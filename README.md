@@ -108,6 +108,25 @@ This is how I integrate fqcss with sass in my projects: I watch changes in the "
     (fqcss-stop))
 ```
 
+### Aliases
+
+fqcss supports namespace aliases:
+
+```
+{alias short very.long.namespace.that.i.dont.want.to.type}
+.{short/element} { font-size: 12px; }
+.{very.long.namespace.that.i.dont.want.to.type/another-element} { background-color: black; }
+```
+
+Result:
+
+```
+.element--PG__1 { font-size: 12px; }
+.another-element--PG__1 { background-color: black; }
+```
+
+Aliases should take a whole line.
+
 
 ## License
 
