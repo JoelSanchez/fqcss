@@ -12,3 +12,4 @@ pom.xml.asc
 /resources
 .idea
 *.iml
+/node_modules

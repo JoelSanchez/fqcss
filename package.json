@@ -1,0 +1,27 @@
+{
+  "name": "fqcss",
+  "version": "1.0.0",
+  "description": "FQCSS",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/JoelSanchez/fqcss.git"
+  },
+  "author": "Joel Sánchez",
+  "license": "EPL-1.0",
+  "bugs": {
+    "url": "https://gitlab.com/JoelSanchez/fqcss/issues"
+  },
+  "homepage": "https://gitlab.com/JoelSanchez/fqcss#README",
+  "devDependencies": {
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.1.1",
+    "karma-cljs-test": "^0.1.0"
+  }
+}
