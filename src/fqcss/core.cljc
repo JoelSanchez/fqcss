@@ -46,6 +46,7 @@
 (defn wrap-reagent
   "Wraps a reagent component, adding the :fqcss property."
   [component]
+  {:pre [(vector? component) (>= (count component) 1)]}
   (let [{:keys [element properties children]} (reagent-component->map component)]
     (into [] (remove nil-or-empty (concat [element (process-properties properties)]
                                           (into [] (map maybe-wrap-reagent children)))))))

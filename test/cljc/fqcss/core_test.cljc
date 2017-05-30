@@ -13,25 +13,18 @@
           component
           [:div.something.example {:property "value" :fqcss [::something ::something-else]}
            [:div.other.thing {:other-property "value" :class "existing-class" :fqcss [::something]}]
-           [:div.yet.another.thing {:example "stuff"}]]
+           [:div.yet.another.thing {:example "stuff"}]
+           [:div.last.thing "Stuff"]]
           resolved-component
           [:div.something.example {:property "value" :class (str "something__" ns-hash " something-else__" ns-hash)}
            [:div.other.thing {:other-property "value" :class (str "existing-class something__" ns-hash)}]
-           [:div.yet.another.thing {:example "stuff"}]]
+           [:div.yet.another.thing {:example "stuff"}]
+           [:div.last.thing "Stuff"]]
           ]
-      (is (= (fqcss/wrap-reagent component) resolved-component)))
-
-    (let [ns-hash (hash (namespace ::example))
-          component
-          [:div.something.example {:property "value" :fqcss [::something ::something-else]}
-           [:div.other.thing {:other-property "value" :class "existing-class" :fqcss [::something]}]
-           [:div.yet.another.thing "Stuff"]]
-          resolved-component
-          [:div.something.example {:property "value" :class (str "something__" ns-hash " something-else__" ns-hash)}
-           [:div.other.thing {:other-property "value" :class (str "existing-class something__" ns-hash)}]
-           [:div.yet.another.thing "Stuff"]]
-          ]
-      (is (= (fqcss/wrap-reagent component) resolved-component)))))
+      (is (= (fqcss/wrap-reagent component) resolved-component))))
+  (testing "It should fail to wrap an empty vector"
+    (is (= "exception" (try (fqcss/wrap-reagent [])
+                            (catch Error e (str "exception")))))))
 
 (deftest test-replace-css
   (testing "It should replace class keywords in a CSS string"
