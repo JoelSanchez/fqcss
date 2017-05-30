@@ -3,47 +3,8 @@
 
 #?(:cljs (enable-console-print!))
 
-(def ^:private pseudo-gensym-id
-  "The pseudo-gensym atom"
-  (atom 0))
-
-(defn- pseudo-gensym-nextid
-  "Increments the pseudo-gensym atom and returns the new value"
-  []
-  (swap! pseudo-gensym-id inc))
-
-(defn- pseudo-gensym-reset
-  "Resets the pseudo-gensym atom"
-  []
-  (reset! pseudo-gensym-id 0))
-
-(defn- pseudo-gensym
-  "Independent version of gensym. This allows generating the same classes in both client and server"
-  ([] (pseudo-gensym "PG__"))
-  ([prefix-string]
-     (symbol (str prefix-string (pseudo-gensym-nextid)))))
-
-(def ^:private gensym-map
-  (atom {}))
-
-(defn- pseudo-gensym-for-ns
-  "Returns the pseudo-gensym associated with the given namespace.
-   Creates and associates one if none exists"
-  [ns-symbol]
-  (if-let [gs (get @gensym-map (keyword ns-symbol))]
-    gs
-    (let [new-gs (pseudo-gensym)]
-      (swap! gensym-map assoc (keyword ns-symbol) new-gs)
-      new-gs)))
-
-(defn reset
-  "Resets the gensym map, the class map, and the pseudo-gensym ID."
-  []
-  (reset! gensym-map {})
-  (reset! pseudo-gensym-id 0))
-
 (defn resolve-kw [kw]
-  (str (name kw) "--" (pseudo-gensym-for-ns (namespace kw))))
+  (str (name kw) "__" (hash (namespace kw))))
 
 (defn- process-property [[kw value]]
   (if (= kw :fqcss)
@@ -128,6 +89,8 @@
 (defn replace-css
   "Replaces the fqcss keywords in a CSS string"
   [css]
-  (-> css
-      (replace-css-aliases)
-      (replace-css-classes)))
+  (let [css (-> css
+                (replace-css-aliases)
+                (replace-css-classes))]
+    (reset! aliases {})
+    css))
