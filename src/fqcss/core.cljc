@@ -39,7 +39,7 @@
 (declare wrap-reagent)
 
 (defn- maybe-wrap-reagent [child]
-  (if (vector? child)
+  (if (and (vector? child) (>= (count child) 1))
     (wrap-reagent child)
     child))
 
