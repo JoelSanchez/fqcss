@@ -60,38 +60,34 @@
       (string/replace "}" "")
       (keyword)))
 
-(def aliases
-  "The replace-css aliases"
-  (atom {}))
-
 (defn- replace-css-classes
   "replace-css helper. Replaces the CSS classes ({app.example/something} -> .something__-301316910)"
-  [css]
-  (let [matches (re-seq #"\{[a-zA-Z0-9\-\.\/]*?\}" css)]
-    (reduce (fn [acc item]
-              (let [kw (placeholder->kw item)
-                    kw (if-let [expanded-ns (get @aliases (namespace kw))]
-                         (keyword expanded-ns (name kw))
-                         kw)]
-                (string/replace acc item (resolve-kw kw))))
-            css
-            matches)))
+  ([css]
+    (replace-css-classes css {}))
+  ([css aliases]
+    ;; To avoid conflicts with CSS syntax, forbid ";" and ":""
+    (let [matches (re-seq #"\{[^;:]+?\}" css)]
+      (reduce (fn [acc item]
+                (let [kw (placeholder->kw item)
+                      kw (if-let [expanded-ns (get aliases (namespace kw))]
+                           (keyword expanded-ns (name kw))
+                           kw)]
+                  (string/replace acc item (resolve-kw kw))))
+              css
+              matches))))
 
 (defn- replace-css-aliases
   "replace-css helper. Evaluates and removes the aliases ({alias example app.example}"
   [css]
-  (let [matches (re-seq #"\{alias ([a-zA-Z0-9\-\.\/]+?) ([a-zA-Z0-9\-\.\/]+?)\}\n" css)]
-    (reduce (fn [acc [all alias ns-name :as match]]
-              (swap! aliases assoc alias ns-name)
-              (string/replace acc all ""))
-            css
+  (let [matches (re-seq #"\{alias ([^;:]+?) ([^;:]+?)\}\n" css)]
+    (reduce (fn [{:keys [css aliases]} [all alias ns-name :as match]]
+              {:css (string/replace css all "")
+               :aliases (assoc aliases alias ns-name)})
+            {:css css :aliases {}}
             matches)))
 
 (defn replace-css
   "Replaces the fqcss keywords in a CSS string"
   [css]
-  (let [css (-> css
-                (replace-css-aliases)
-                (replace-css-classes))]
-    (reset! aliases {})
-    css))
+  (let [{:keys [css aliases]} (replace-css-aliases css)]
+    (replace-css-classes css aliases)))
