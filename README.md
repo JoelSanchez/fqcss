@@ -31,12 +31,12 @@ Pull requests welcome. This library is currently in alpha state. Expect breaking
 
 (defn something []
   (wrap-reagent
-      [:div {:class "example preheader--PG__1 something--PG__2"}
+      [:div {:class "example preheader__318088553 something__-1703565805"}
         [:div.ui.container
-          [:div {:class "preheader-item--PG__1"}
-            [:div {:class "preheader-separator--PG__1"} "|"]]
-          [:div {:class "preheader-separator--PG__1"} "-"]
-          [:div {:class "preheader-item--PG__1"}
+          [:div {:class "preheader-item__318088553"}
+            [:div {:class "preheader-separator__318088553"} "|"]]
+          [:div {:class "preheader-separator__318088553"} "-"]
+          [:div {:class "preheader-item__318088553"}
             [:strong "Lorem ipsum"]]]]))
 
 ;; The same can be achieved without wrap-reagent:
@@ -70,7 +70,7 @@ To process a CSS file:
 The generated CSS is:
 
 ```CSS
-.preheader--PG__1 {
+.preheader__1552691312 {
   padding: 8px 0px;
   background-color: #ecf0f1;
 }
@@ -121,8 +121,8 @@ fqcss supports namespace aliases:
 Result:
 
 ```
-.element--PG__1 { font-size: 12px; }
-.another-element--PG__1 { background-color: black; }
+.element__-214598257 { font-size: 12px; }
+.another-element__-214598257 { background-color: black; }
 ```
 
 Aliases should take a whole line.
