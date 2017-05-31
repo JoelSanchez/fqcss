@@ -65,7 +65,7 @@
   (atom {}))
 
 (defn- replace-css-classes
-  "replace-css helper. Replaces the CSS classes ({app.example/something} -> .something--PG__1)"
+  "replace-css helper. Replaces the CSS classes ({app.example/something} -> .something__-301316910)"
   [css]
   (let [matches (re-seq #"\{[a-zA-Z0-9\-\.\/]*?\}" css)]
     (reduce (fn [acc item]
