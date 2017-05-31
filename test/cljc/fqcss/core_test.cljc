@@ -24,7 +24,7 @@
       (is (= (fqcss/wrap-reagent component) resolved-component))))
   (testing "It should fail to wrap an empty vector"
     (is (= "exception" (try (fqcss/wrap-reagent [])
-                            (catch Error e (str "exception")))))))
+                            (catch #?(:clj Error :cljs :default) e (str "exception")))))))
 
 (deftest test-replace-css
   (testing "It should replace class keywords in a CSS string"
