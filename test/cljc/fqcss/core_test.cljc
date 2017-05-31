@@ -39,6 +39,17 @@
                ".a-class.something__" ns-hash " { background-color: black; }\n"
                ".something__" ns-hash " { text-align: center; font-size: 14px; }\n"
                ".something__" ns-hash " &.something-else__" ns-hash " { font-size: 15px; }")]
+      (is (= (fqcss/replace-css css) replaced-css))))
+  (testing "It should not be confused when confronted with empty CSS declarations"
+    (let [ns-hash (hash "my.namespaced")
+          css
+          (str ".a-class { font-size: 14px; }\n"
+               ".{my.namespaced/class} {}\n"
+               ".{my.namespaced/class2} { }")
+          replaced-css
+          (str ".a-class { font-size: 14px; }\n"
+               ".class__" ns-hash " {}\n"
+               ".class2__" ns-hash " { }")]
       (is (= (fqcss/replace-css css) replaced-css)))))
 
 (deftest test-aliases

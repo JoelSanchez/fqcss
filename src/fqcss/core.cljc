@@ -65,8 +65,8 @@
   ([css]
     (replace-css-classes css {}))
   ([css aliases]
-    ;; To avoid conflicts with CSS syntax, forbid ";" and ":""
-    (let [matches (re-seq #"\{[^;:]+?\}" css)]
+    ;; To avoid conflicts with CSS syntax, forbid ";", ":"" and whitespace
+    (let [matches (re-seq #"\{[^;:\s]+?\}" css)]
       (reduce (fn [acc item]
                 (let [kw (placeholder->kw item)
                       kw (if-let [expanded-ns (get aliases (namespace kw))]
@@ -79,7 +79,7 @@
 (defn- replace-css-aliases
   "replace-css helper. Evaluates and removes the aliases ({alias example app.example}"
   [css]
-  (let [matches (re-seq #"\{alias ([^;:]+?) ([^;:]+?)\}\n" css)]
+  (let [matches (re-seq #"\{alias ([^;:\s]+?) ([^;:\s]+?)\}\n" css)]
     (reduce (fn [{:keys [css aliases]} [all alias ns-name :as match]]
               {:css (string/replace css all "")
                :aliases (assoc aliases alias ns-name)})
