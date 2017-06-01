@@ -2,81 +2,146 @@
 
 [![Clojars Project](https://img.shields.io/clojars/v/fqcss.svg)](https://clojars.org/fqcss)
 
-*Abstract:*
+I developed this because I wanted to avoid conflicts between CSS classes from different namespaces. Say, you have a "header" component in a namespace, and you want to use that same name in another component because it has semantic sense (like the header of a data-table component, for example). You'd probably come up with some prefix like "data-table-header", but why bother? Isn't the namespace of the component enough for that? Now, of course you can do this:
 
-I developed this because I wanted a simple alternative to other popular CSS modules solutions for CLJ/CLJS (found them too limited or too awkward). fqcss works by replacing namespaced keywords in CSS files with generated CSS classes.
-
-Pull requests welcome. This library is currently in alpha state. Expect breaking changes.
-
-*Quick example with Reagent*:
-
-```Clojure
-(ns app.some.namespace
-  (:require [fqcss :refer [wrap-reagent replace-css resolve-kw]))
-
-;; Define the namespaced classes as a vector in the :fqcss property:
-
-(defn something []
-  (wrap-reagent
-      [:div {:class "example" :fqcss [::preheader :app.some.other.namespace/something]}
-        [:div.ui.container
-          [:div {:fqcss [::preheader-item]}
-            [:div {:fqcss [::preheader-separator]} "|"]]
-          [:div {:fqcss [::preheader-separator]} "-"]
-          [:div {:fqcss [::preheader-item]}
-            [:strong "Lorem ipsum"]]]]))
-
-
-;; This results in:
-
-(defn something []
-  (wrap-reagent
-      [:div {:class "example preheader__318088553 something__-1703565805"}
-        [:div.ui.container
-          [:div {:class "preheader-item__318088553"}
-            [:div {:class "preheader-separator__318088553"} "|"]]
-          [:div {:class "preheader-separator__318088553"} "-"]
-          [:div {:class "preheader-item__318088553"}
-            [:strong "Lorem ipsum"]]]]))
-
-;; The same can be achieved without wrap-reagent:
-
-(defn something []
-  [:div {:class (clojure.string/join " " (concat ["example"] (map resolve-kw [::preheader :app.some.other.namespace/something])))}
-    [:div.ui.container
-      [:div {:class (resolve-kw ::preheader-item)}
-        [:div {:class (resolve-kw ::preheader-separator)} "|"]]
-      [:div {:class (resolve-kw ::preheader-separator)} "-"]
-      [:div {:class (resolve-kw ::preheader-item)}
-        [:strong "Lorem ipsum"]]]])
 ```
-
-FQCSS works by processing your stylesheet, replacing its special syntax (the keyword surrounded by curly braces):
-
-```CSS
-.{app.some.namespace/preheader} {
-  padding: 8px 0px;
-  background-color: #ecf0f1;
+.app_plugins_data-table_components_data-table--header {
+    font-size: 2em;
+    font-weight: bold;
 }
 ```
 
-To process a CSS file:
+But that results in three problems:
+
+* You'd have to refer to the long CSS classes every single time in your components (see below).
+* It's verbose, hence tiring, hence error-prone.
+* It's not very readable, because the dot means something else in CSS (that's why you'd need to use "_" or something)
+
+Just look at this:
 
 ```Clojure
-(replace-css (slurp "stylesheet.css")
-
+(defn header []
+  [:div.app_plugins_data-table_components_data-table--header
+    [:div.app_plugins_data-table_components_data-table--header-text "Hi"]])
 ```
 
-The generated CSS is:
+Ew. There's got to be a better way! What if we could just use qualified keywords to refer to the classes of our namespace? Something like this (won't work, of course):
 
-```CSS
-.preheader__1552691312 {
-  padding: 8px 0px;
-  background-color: #ecf0f1;
+```Clojure
+(defn header []
+  [:div {:class [::header]}
+    [:div {:class [::header-text]} "Hi"]])
+```
+
+That'd be great, hence fqcss was born. You declare the classes as a vector of qualified keywords in the :fqcss property, and you wrap your component with a call to fqcss.core/wrap-reagent:
+
+```Clojure
+(defn header []
+  (wrap-reagent
+    [:div {:fqcss [::header]}
+      [:div {:fqcss [::header-text]} "Hi"]]))
+```
+
+And this is the result (assuming app.plugins.data-table.components.data-table namespace):
+
+```Clojure
+[:div {:class "header__-153777894"}
+  [:div {:class "header-text__-153777894"} "Hi"]]
+```
+
+Here "318088553" is (hash (.getName *ns*)), that is, the hash of the name of the namespace where the component lives.
+
+wrap-reagent is just Syntax Sugar (tm), so you can use fqcss.core/resolve-kw instead:
+
+```Clojure
+(defn header []
+  [:div {:class (resolve-kw ::header)}
+    [:div {:class (resolve-kw ::header-text)} "Hi"]])
+```
+
+Now, this is nice, but how do I write the CSS? If you remember, our CSS looked like this:
+
+```
+.app_plugins_data-table_components_data-table--header {
+    font-size: 2em;
+    font-weight: bold;
 }
 ```
 
-This is how I integrate fqcss with sass in my projects: I watch changes in the "src/fqcss" directory, output the result from fqcss to the same relative paths in "src/scss", and then the SCSS watcher (lein-sassc) processes those files and turns them into a file in "resources/public/css/style.css". Here's the fqcss watcher:
+We can rewrite it such that fqcss can replace the namespaced classes for us, like this:
+
+```
+.{app.plugins.data-table.components.data-table/header} {
+    font-size: 2em;
+    font-weight: bold;
+}
+```
+
+This is the generated CSS:
+
+```
+.header__-153777894 {
+    font-size: 2em;
+    font-weight: bold;
+}
+```
+
+"But that's still verbose, I want my money back", you say. I know. That's why you can do this:
+
+```
+{alias data-table app.plugins.data-table.components.data-table}
+
+.{data-table/header} {
+    font-size: 2em;
+    font-weight: bold;
+}
+.{data-table/header-text} {
+    color: black;
+}
+```
+
+Note that the alias comes before the namespace, just like with clojure.core/alias. Also, they have to take the whole line.
+
+Now, how do we get that CSS file / string / whatever processed by fqcss? Easy:
+
+```Clojure
+(fqcss.core/replace-css (slurp "style.css"))
+```
+
+That's it for the API.
+
+### How do I integrate this with my project?
+
+I'm going to explain how I do it, but all of it is up to you.
+
+I have this project structure:
+
+```
+my-project
+  src
+    clj
+      my-project
+        components
+          data-table.clj
+    fqcss
+      my-project
+        components
+          data-table.scss
+    scss
+      my-project
+        components
+          data-table.scss
+```
+
+I watch for file changes in the "fqcss" directory. Every time a file is updated or created, it is processed by fqcss and put into the same relative path under the "scss" directory:
+
+```
+fqcss/my-project/components/data-table.scss -> (replace-css) -> scss/my-project/components/data-table.scss
+```
+
+Then the SCSS watcher processes that file, then figwheel detects the change in the CSS file, then it gets loaded, then everything's good.
+
+Here's my fqcss watcher:
 
 ```Clojure
 (ns user
@@ -108,24 +173,7 @@ This is how I integrate fqcss with sass in my projects: I watch changes in the "
     (fqcss-stop))
 ```
 
-### Aliases
-
-fqcss supports namespace aliases:
-
-```
-{alias short very.long.namespace.that.i.dont.want.to.type}
-.{short/element} { font-size: 12px; }
-.{very.long.namespace.that.i.dont.want.to.type/another-element} { background-color: black; }
-```
-
-Result:
-
-```
-.element__-214598257 { font-size: 12px; }
-.another-element__-214598257 { background-color: black; }
-```
-
-Aliases should take a whole line.
+Pull requests welcome. This library is currently in alpha state. Expect breaking changes.
 
 
 ## License
