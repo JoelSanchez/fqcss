@@ -112,7 +112,7 @@ Now, how do we get that CSS file / string / whatever processed by fqcss? Easy:
 
 That's it for the API.
 
-## Freedom!
+### Freedom!
 
 Since fqcss processes a CSS string, you can write CSS however you want.
 
