@@ -112,6 +112,12 @@ Now, how do we get that CSS file / string / whatever processed by fqcss? Easy:
 
 That's it for the API.
 
+## Freedom!
+
+Since fqcss processes a CSS string, you can write CSS however you want.
+
+Since fqcss works by using (replace-kw), anyone can write (replace-kw) wrappers (like (wrap-reagent)) for any conceivable way of writing components -- hence you can write them however you want.
+
 ### How do I integrate this with my project?
 
 I'm going to explain how I do it, but all of it is up to you.
