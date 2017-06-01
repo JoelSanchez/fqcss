@@ -2,6 +2,8 @@
 
 [![Clojars Project](https://img.shields.io/clojars/v/fqcss.svg)](https://clojars.org/fqcss)
 
+tl;dr: conflict-free CSS classes, write CSS however you want (Clojure, SCSS, plain SCSS...), write components however you want (Rum, Reagent, HTML...) -- the library doesn't care.
+
 I developed this because I wanted to avoid conflicts between CSS classes from different namespaces. Say, you have a "header" component in a namespace, and you want to use that same name in another component because it has semantic sense (like the header of a data-table component, for example). You'd probably come up with some prefix like "data-table-header", but why bother? Isn't the namespace of the component enough for that? Now, of course you can do this:
 
 ```
