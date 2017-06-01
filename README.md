@@ -49,7 +49,7 @@ And this is the result (assuming app.plugins.data-table.components.data-table na
   [:div {:class "header-text__-153777894"} "Hi"]]
 ```
 
-Here "318088553" is (hash (.getName *ns*)), that is, the hash of the name of the namespace where the component lives.
+Here "-153777894" is (hash (.getName *ns*)), that is, the hash of the name of the namespace where the component lives.
 
 wrap-reagent is just Syntax Sugar (tm), so you can use fqcss.core/resolve-kw instead:
 
