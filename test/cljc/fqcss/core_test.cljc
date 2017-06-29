@@ -65,3 +65,15 @@
                ".another-element__" ns-hash " { text-align: center; }\n"
                ".button__" ns-hash " { background-color: black; }")]
       (is (= (fqcss/replace-css css) replaced-css)))))
+
+(deftest test-lists
+  (testing "It should wrap lists of components correctly"
+    (let [input [:div {:fqcss [::a]}
+                 '([:div {:fqcss [::b]}
+                    [:a "a"]]
+                   [:div {:fqcss [::b]}
+                    [:a "b"]])]]
+      (is (= (fqcss/wrap-reagent input)
+             [:div {:class "a__-704642599"}
+              '([:div {:class "b__-704642599"} [:a "a"]]
+                [:div {:class "b__-704642599"} [:a "b"]])])))))

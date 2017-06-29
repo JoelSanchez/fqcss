@@ -6,11 +6,6 @@
 (defn resolve-kw [kw]
   (str (name kw) "__" (hash (namespace kw))))
 
-(defn- process-property [[kw value]]
-  (if (= kw :fqcss)
-    [kw (clojure.string/join " " (map resolve-kw value))]
-    [kw value]))
-
 (defn- process-properties [props]
   (let [existing-classes (if-let [prop (:class props)]
                            (clojure.string/split prop #" ")
@@ -25,7 +20,8 @@
 
 (defn- reagent-component->map
   [component]
-  (let [element    (get component 0)
+  (let [component  (vec component)
+        element    (get component 0)
         properties (if (map? (get component 1)) (get component 1) nil)
         children   (if (map? (get component 1)) (subvec component 2) (subvec component 1))]
     {:element element
@@ -39,9 +35,12 @@
 (declare wrap-reagent)
 
 (defn- maybe-wrap-reagent [child]
-  (if (and (vector? child) (>= (count child) 1))
-    (wrap-reagent child)
-    child))
+  (cond
+    (and (vector? child) (>= (count child) 1))
+      (wrap-reagent child)
+    (and (coll? child) (>= (count child) 1))
+      (map wrap-reagent child)
+    :else child))
 
 (defn wrap-reagent
   "Wraps a reagent component, adding the :fqcss property."
